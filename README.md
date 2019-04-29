@@ -14,4 +14,3 @@ Thanks to Yannael whose repository: https://github.com/Yannael/kafka-sparkstream
 7. Connect as guest: `ssh -p 23 guest@localhost`; password is `guest`
 
  
-# sidewalk_data_streamer
