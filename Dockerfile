@@ -1,6 +1,4 @@
-#Container for Kafka - Spark streaming - Cassandra
-#IMPORTANT: If you wish to share folder between your host and this container, make sure the UID for user guest is the same as your UID
-#Check https://github.com/Yannael/brufence/blob/master/docker/streaming/README.md for details
+# Sidewalk Data Streamer
 FROM centos:centos6
 
 RUN yum -y update;
@@ -19,42 +17,32 @@ RUN echo guest | passwd guest --stdin
 ENV HOME /home/guest
 WORKDIR $HOME
 
-
+####################################################
 USER guest
 
 #Install Spark (Spark 2.1.1 - 02/05/2017, prebuilt for Hadoop 2.7 or higher)
 RUN wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.7.tgz
 RUN tar xvzf spark-2.1.1-bin-hadoop2.7.tgz
 RUN mv spark-2.1.1-bin-hadoop2.7 spark
-
 ENV SPARK_HOME $HOME/spark
 
 #Install Kafka
-#RUN wget http://mirrors.dotsrc.org/apache/kafka/0.10.2.1/kafka_2.11-0.10.2.1.tgz
 RUN wget https://archive.apache.org/dist/kafka/0.10.2.1/kafka_2.11-0.10.2.1.tgz
 RUN tar xvzf kafka_2.11-0.10.2.1.tgz
 RUN mv kafka_2.11-0.10.2.1 kafka
-
 ENV PATH $HOME/spark/bin:$HOME/spark/sbin:$HOME/kafka/bin:$PATH
 
-#Install Anaconda Python distribution
+# Install Anaconda (Use python 2.7 because cassandra does not support 3)
 RUN wget https://repo.continuum.io/archive/Anaconda2-4.4.0-Linux-x86_64.sh
 RUN bash Anaconda2-4.4.0-Linux-x86_64.sh -b
 ENV PATH $HOME/anaconda2/bin:$PATH
 RUN conda install python=2.7.10 -y
 
-#Install Jupyer notebook + Toree Scala kernel
+# Necessary Python packages
 RUN conda install jupyter -y 
+RUN pip install -y kafka-python argparse fastavro cassandra-driver
 
-#Install Kafka Python module
-RUN pip install kafka-python
-
-#Install argparse
-RUN pip install argparse
-
-#Install fastavro
-RUN pip install fastavro
-
+#####################################################
 USER root
 
 #Install Cassandra
@@ -71,19 +59,12 @@ RUN echo . ./setenv.sh >> .bashrc
 ADD startup_script.sh /usr/bin/startup_script.sh
 RUN chmod +x /usr/bin/startup_script.sh
 
-#Init Cassandra 
+# Create Cassandra Keyspace and Tables
 ADD init_cassandra.cql /home/guest/init_cassandra.cql
 RUN chown guest:guest init_cassandra.cql
-
-#Add notebooks
-ADD notebooks /home/guest/notebooks
 
 #Make data directory for flat files 
 RUN mkdir /data
 RUN chown -R guest:guest /data
 
-#Ensure that guest user can access all of guest's home directory
-RUN chown -R guest:guest $HOME/notebooks
-#RUN chown guest:guest $HOME/kafka.log
-#RUN chown guest:guest $HOME/zookeeper.log
 
