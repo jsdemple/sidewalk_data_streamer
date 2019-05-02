@@ -13,4 +13,16 @@ Thanks to Yannael whose repository: https://github.com/Yannael/kafka-sparkstream
 6.	Start the consumers: `cd /home/guest/host/pipeline && ~/anaconda2/bin/python consume_spoof_data.py -i dmi` where the `-i` option selects which instrument data to receive data from.
 7. Connect as guest: `ssh -p 23 guest@localhost`; password is `guest`
 
- 
+
+# Running the raw side of the pipeline only
+We may just use the raw only for a while until we define the aggregations better. For now this is a sure-fire way to ensure that all data is saved even at very rapid speeds. The speeds indicated by the `-d` option below reflect the actual speeds that these instruments collect data. There will be other instruments collecting data, but they will likely need to be on different containers since running them is significantly different compared to these instruments.
+## Producer start
+* cd /home/guest/host/pipeline && ~/anaconda2/bin/python generate_spoof_data.py -d 0.2 -i dmi
+* cd /home/guest/host/pipeline && ~/anaconda2/bin/python generate_spoof_data.py -d 0.2 -i gps
+* cd /home/guest/host/pipeline && ~/anaconda2/bin/python generate_spoof_data.py -d 0.1 -i imu
+
+## Consumer start
+* cd /home/guest/host/pipeline && ~/anaconda2/bin/python consume_spoof_data.py -i dmi
+* cd /home/guest/host/pipeline && ~/anaconda2/bin/python consume_spoof_data.py -i gps
+* cd /home/guest/host/pipeline && ~/anaconda2/bin/python consume_spoof_data.py -i imu
+

@@ -40,7 +40,7 @@ RUN conda install python=2.7.10 -y
 
 # Necessary Python packages
 RUN conda install jupyter -y 
-RUN pip install -y kafka-python argparse fastavro cassandra-driver
+RUN pip install kafka-python argparse fastavro cassandra-driver
 
 #####################################################
 USER root
@@ -63,8 +63,11 @@ RUN chmod +x /usr/bin/startup_script.sh
 ADD init_cassandra.cql /home/guest/init_cassandra.cql
 RUN chown guest:guest init_cassandra.cql
 
-#Make data directory for flat files 
+# Make data directory for flat files 
 RUN mkdir /data
 RUN chown -R guest:guest /data
 
+# Directory for temporary export files to be stored
+ADD exports /home/guest/exports
+RUN chown -R guest:guest exports
 
