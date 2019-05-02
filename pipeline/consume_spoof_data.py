@@ -15,8 +15,8 @@ from cassandra.cluster import Cluster
 
 cluster = Cluster()
 
-TOPIC = 'dmi'
-debug = True
+#TOPIC = 'dmi'
+debug = False
 
 # PARSE ARGS AND SET PATHS, TOPICS
 KEYSPACE = 'raw_instrument'
@@ -66,6 +66,7 @@ consumer = KafkaConsumer(TOPIC,
                          group_id='A',
                          bootstrap_servers=['localhost:9092'])
  
+print('CONSUMING DATA FROM TOPIC: {0}'.format(TOPIC)) 
 
 def write_to_disk(line, filepath):
     try:
@@ -87,11 +88,11 @@ def write_to_avro(line, schema, filepath):
     
 
 def save_to_cassandra(keyspace, topic, keys, vals):
-    query = 'INSERT INTO {0}.{1} {2} VALUES {3}'.format(keyspace,  # str keyspace name
-                                                        topic,  # str table name
-                                                        keys,  # tuple
-                                                        vals)  # tuple
+    query = 'INSERT INTO {0}.{1} {2} '.format(keyspace,  # str keyspace name
+                                              topic,  # str table name
+                                              keys)  # tuple
     query = query.replace("u'", '').replace("'", '')  # remove quotes from column names
+    query = query + 'VALUES {0}'.format(vals)  # tuple
     print(query)
     session.execute(query)
     return True
@@ -105,8 +106,20 @@ if __name__ == "__main__":
         #                                      message.offset, message.key,
         #                                      message.value))
         raw_line = message.value
+        raw_line = raw_line.replace('"",', '"NaN",')
+        print(raw_line)
         record = json.loads(raw_line)
+        ## replace empty strings in record with nan
+        #record_cleaned = dict()
+        #for k,v in record.iteritems():
+        #    if type(v) == str:
+        #        if len(v) == 0:
+        #            v = v.replace('', 'NaN')
+        #    record_cleaned[k] = v
+        #print('cleaned record: {0}'.format(record_cleaned))
+
         keys = tuple(record.keys())
         vals = tuple(record.values())
+
         save_to_cassandra(KEYSPACE, TOPIC, keys, vals)
         print(record)

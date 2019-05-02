@@ -26,3 +26,9 @@ We may just use the raw only for a while until we define the aggregations better
 * cd /home/guest/host/pipeline && ~/anaconda2/bin/python consume_spoof_data.py -i gps
 * cd /home/guest/host/pipeline && ~/anaconda2/bin/python consume_spoof_data.py -i imu
 
+# Exporting from Cassandra to Cloud
+This command exports the data collected to csv files
+* [guest@0b1b959292ed pipeline]$ cqlsh -f export_to_csv.cql
+
+Next you will need to rsync to the cloud storage buckets in GCP
+
