@@ -5,7 +5,7 @@ Thanks to Yannael whose repository: https://github.com/Yannael/kafka-sparkstream
 ## How to use
 1. Clone the repository sidewalk_data_streamer
 2. Build the Docker container: `sudo docker build -t sidewalk_data_streamer .`
-3. Run the image: `sudo docker run -v \`pwd\`:/home/guest/host -p 4040:4040 -p 8888:8888 -p 23:22 -ti --privileged sidewalk_data_streamer`
+3. Run the image: ```sudo docker run -v `pwd`:/home/guest/host -p 4040:4040 -p 8888:8888 -p 23:22 -ti --privileged sidewalk_data_streamer```
 4. Execute the startup script as root: `startup_script.sh`
 5. Change user to `guest`: `su guest`
 6. Start the streaming service
